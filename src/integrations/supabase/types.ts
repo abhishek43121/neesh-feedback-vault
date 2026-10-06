@@ -14,7 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pilot_feedback: {
+        Row: {
+          ai_score: number
+          brutal_feedback: string
+          clarity_score: number
+          confusing_part: string
+          discovery_answer: string
+          discovery_detail: string
+          frustrating_part: string
+          id: string
+          improvement: string
+          missing_feature: string
+          onboarding_score: number
+          overall_score: number
+          pitch_score: number
+          pitch_url: string
+          profile_id: string
+          project_stage: string
+          project_url: string
+          recommendation: string
+          reuse_intent: string
+          spotlight_score: number
+          spotlight_url: string
+          submitted_at: string
+          usability_score: number
+          valuable_part: string
+          website_url: string
+          what_tested: string[]
+        }
+        Insert: {
+          ai_score: number
+          brutal_feedback?: string
+          clarity_score: number
+          confusing_part?: string
+          discovery_answer: string
+          discovery_detail?: string
+          frustrating_part?: string
+          id?: string
+          improvement?: string
+          missing_feature?: string
+          onboarding_score: number
+          overall_score: number
+          pitch_score: number
+          pitch_url?: string
+          profile_id: string
+          project_stage?: string
+          project_url?: string
+          recommendation?: string
+          reuse_intent?: string
+          spotlight_score: number
+          spotlight_url?: string
+          submitted_at?: string
+          usability_score: number
+          valuable_part: string
+          website_url?: string
+          what_tested?: string[]
+        }
+        Update: {
+          ai_score?: number
+          brutal_feedback?: string
+          clarity_score?: number
+          confusing_part?: string
+          discovery_answer?: string
+          discovery_detail?: string
+          frustrating_part?: string
+          id?: string
+          improvement?: string
+          missing_feature?: string
+          onboarding_score?: number
+          overall_score?: number
+          pitch_score?: number
+          pitch_url?: string
+          profile_id?: string
+          project_stage?: string
+          project_url?: string
+          recommendation?: string
+          reuse_intent?: string
+          spotlight_score?: number
+          spotlight_url?: string
+          submitted_at?: string
+          usability_score?: number
+          valuable_part?: string
+          website_url?: string
+          what_tested?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_feedback_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilot_profiles: {
+        Row: {
+          company: string
+          created_at: string
+          email: string
+          expectations: string
+          experience: string
+          full_name: string
+          id: string
+          linkedin_url: string
+          location: string
+          pilot_role: string
+          profession: string
+          startup_name: string
+          updated_at: string
+          whatsapp: string
+          why_joined: string
+        }
+        Insert: {
+          company?: string
+          created_at?: string
+          email: string
+          expectations?: string
+          experience?: string
+          full_name: string
+          id?: string
+          linkedin_url?: string
+          location?: string
+          pilot_role?: string
+          profession?: string
+          startup_name?: string
+          updated_at?: string
+          whatsapp?: string
+          why_joined?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          email?: string
+          expectations?: string
+          experience?: string
+          full_name?: string
+          id?: string
+          linkedin_url?: string
+          location?: string
+          pilot_role?: string
+          profession?: string
+          startup_name?: string
+          updated_at?: string
+          whatsapp?: string
+          why_joined?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
