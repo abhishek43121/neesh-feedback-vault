@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowDownToLine, ArrowLeft, ArrowUpDown, Download, FileSpreadsheet, LockKeyhole, Search, ShieldCheck, Users } from "lucide-react";
@@ -51,7 +51,7 @@ function FounderAccess() {
 
   useEffect(() => { void refresh(); }, []);
 
-  async function onUnlock(event: React.FormEvent<HTMLFormElement>) {
+  async function onUnlock(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     try {
@@ -154,12 +154,12 @@ function downloadFile(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function Stat({ label, value, detail, icon }: { label: string; value: string; detail: string; icon: React.ReactNode }) {
+function Stat({ label, value, detail, icon }: { label: string; value: string; detail: string; icon: ReactNode }) {
   return <div className="stat-item"><div className="stat-icon">{icon}</div><span>{label}</span><strong>{value}</strong><small>{detail}</small></div>;
 }
 
 function RatingValue({ value }: { value: number }) { return <span className="table-rating">{value}<i> / 5</i></span>; }
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) { return <section className="detail-section"><h3>{title}</h3>{children}</section>; }
+function DetailSection({ title, children }: { title: string; children: ReactNode }) { return <section className="detail-section"><h3>{title}</h3>{children}</section>; }
 function Detail({ label, value, link = false }: { label: string; value: string | null | undefined; link?: boolean }) {
   return <div className="detail-pair"><small>{label}</small>{link && value ? <a href={value} target="_blank" rel="noreferrer">{value}</a> : <p>{value || "—"}</p>}</div>;
 }
