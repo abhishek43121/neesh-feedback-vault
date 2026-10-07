@@ -3,12 +3,14 @@ import { useSession } from "@tanstack/react-start/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
-const sessionConfig = {
-  password: process.env["SESSION_SECRET"] ?? "",
-  name: "neesh-pilot-founder-session",
-  maxAge: 60 * 60 * 12,
-  cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
-};
+function getSessionConfig() {
+  return {
+    password: process.env["SESSION_SECRET"] ?? "",
+    name: "neesh-pilot-founder-session",
+    maxAge: 60 * 60 * 12,
+    cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
+  };
+}
 
 type FounderSession = { unlocked?: boolean };
 
@@ -19,7 +21,7 @@ function passwordMatches(input: string, expected: string): boolean {
 }
 
 async function isFounderUnlocked() {
-  const session = await useSession<FounderSession>(sessionConfig);
+  const session = await useSession<FounderSession>(getSessionConfig());
   return session.data.unlocked === true;
 }
 
@@ -133,13 +135,13 @@ export const unlockFounderDashboard = createServerFn({ method: "POST" })
     const expected = process.env["SITE_PASSWORD"];
     if (!expected || !process.env["SESSION_SECRET"]) throw new Error("Founder access is not configured.");
     if (!passwordMatches(data.password, expected)) return { ok: false as const };
-    const session = await useSession<FounderSession>(sessionConfig);
+    const session = await useSession<FounderSession>(getSessionConfig());
     await session.update({ unlocked: true });
     return { ok: true as const };
   });
 
 export const lockFounderDashboard = createServerFn({ method: "POST" }).handler(async () => {
-  const session = await useSession<FounderSession>(sessionConfig);
+  const session = await useSession<FounderSession>(getSessionConfig());
   await session.clear();
   return { ok: true as const };
 });
