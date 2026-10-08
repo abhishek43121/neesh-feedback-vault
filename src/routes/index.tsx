@@ -84,96 +84,394 @@ const testedItems = [
   "Other",
 ];
 
-const guideSections = [
+interface GuideStep {
+  num: string;
+  title: string;
+  badge?: string;
+  overview: string;
+  sectionTitle?: string;
+  items?: { label: string; text: string }[];
+  callouts?: {
+    type: "tip" | "info" | "warning" | "strategy" | "video";
+    label: string;
+    text: string;
+  }[];
+  tiers?: {
+    tier: string;
+    name: string;
+    desc: string;
+    target?: string;
+  }[];
+}
+
+const guideSections: GuideStep[] = [
   {
     num: "01",
-    title: "Before You Start",
-    content:
-      "Welcome to the Neesh AI 2.0 private pilot. Before you start testing, prepare a short summary of a project or idea you care about. You will test how easily Neesh transforms raw notes into a live interactive Spotlight with an AI-powered conversational layer.",
+    title: "Account Registration & Sign Up",
+    badge: "/signup",
+    overview:
+      "New founders start by registering on the platform at /signup. This creates your dedicated founder workspace and initializes your secure Supabase authentication profile.",
+    sectionTitle: "Founder Instructions",
+    items: [
+      {
+        label: "Email Registration",
+        text: "Enter your First Name, Last Name, and Work/Personal Email Address.",
+      },
+      {
+        label: "Single Sign-On (SSO)",
+        text: "Click Google or GitHub for instant, passwordless sign-up.",
+      },
+      {
+        label: "Email Verification",
+        text: "Click your verification email link to activate your workspace and begin building.",
+      },
+    ],
+    callouts: [
+      {
+        type: "tip",
+        label: "Founder Pro-Tip / Fast-Track Access Trick",
+        text: "In case standard email authentication or verification links encounter inbox spam filters or delivery delays, use Google Sign-In to gain instant, one-click access to the platform! Google SSO bypasses link delays and directly establishes your authenticated session.",
+      },
+    ],
   },
   {
     num: "02",
-    title: "How to Access Neesh AI",
-    content:
-      "Click the 'Launch Platform' button or visit https://neesh-2-o.vercel.app in a new tab. Keep this Pilot Portal open in background so you can cross-reference your mission steps and record observations while exploring.",
+    title: "Signing In to Your Workspace",
+    badge: "/login",
+    overview:
+      "Existing founders log in directly via /login. Authentication tokens and user sessions are securely managed through Supabase session storage.",
+    sectionTitle: "Founder Instructions",
+    items: [
+      {
+        label: "Credentials & SSO",
+        text: "Enter your registered email and password, or authenticate with Google / GitHub SSO.",
+      },
+      {
+        label: "Persistent Sessions",
+        text: "The system keeps you securely logged in across browser sessions so you can seamlessly update spotlights, manage pitch reels, and monitor incoming audience signals.",
+      },
+      {
+        label: "Password Recovery",
+        text: "If you forget your password, click Forgot password? to receive a secure password reset link.",
+      },
+    ],
+    callouts: [
+      {
+        type: "info",
+        label: "Seamless Session Sync",
+        text: "Signing in with the same Google or email account automatically restores your projects, custom spotlight landing pages, audience leads, and live countdown sprint timers.",
+      },
+    ],
   },
   {
     num: "03",
-    title: "Creating Your Account",
-    content:
-      "Use your preferred login option. Test the speed, instructions, and friction of the authentication workflow. Note any confusing terms, missing verification emails, or delays.",
+    title: "Founder Command Dashboard",
+    badge: "/dashboard",
+    overview:
+      "The dashboard (/dashboard) is your startup control tower. It displays active validation sprints, countdown timers, project status badges, and real-time audience views.",
+    sectionTitle: "Dashboard Elements & Actions",
+    items: [
+      {
+        label: "Create New Project",
+        text: "Click the top-right + New Project CTA to launch a new validation workspace and explain your business, startup, or idea to the AI engine.",
+      },
+      {
+        label: "Project Cards",
+        text: "View active sprint timers (e.g. 48-Hour Validation Sprint or 5-Day Stage 3 Sprint), project titles, and status tags (Active, Draft, Locked).",
+      },
+      {
+        label: "Audience Views Counter",
+        text: "Real-time counter of unique audience members who have opened your spotlight or pitch.",
+      },
+      {
+        label: "Cross-Promotion Engine",
+        text: "Live network to cross-promote your spotlight in other founders' 'More Like This' sections.",
+      },
+    ],
+    callouts: [
+      {
+        type: "strategy",
+        label: "Getting Started",
+        text: "Click + New Project to begin. You will explain what your startup does, who it serves, and let Neesh AI guide you through validating your venture assumptions.",
+      },
+    ],
   },
   {
     num: "04",
-    title: "Creating Your Project",
-    content:
-      "Click 'Create Project'. You will be prompted for your startup name, stage, and primary problem statement. Pay attention to whether the instructions are intuitive or if you feel stranded at any prompt.",
+    title: "Creating a Project Workspace",
+    badge: "Create Workspace Wizard",
+    overview:
+      "Clicking + New Project launches the interactive Create Workspace Wizard, initiating the calibrated AI validation workflow for your venture.",
+    sectionTitle: "Workspace Initialization Guide",
+    items: [
+      {
+        label: "Initialize Venture",
+        text: "The wizard creates a dedicated database workspace for your startup where all validation questions, audience signals, spotlight assets, and reels are stored.",
+      },
+      {
+        label: "Structured Progression",
+        text: "You will move step-by-step from core parameters (Name, One-Liner, Sector, Stage) into the AI Copilot dialogue.",
+      },
+      {
+        label: "Sprint Timer Activation",
+        text: "Once initialized and scored, your project enters its audience validation sprint with real-time countdown tracking.",
+      },
+    ],
+    callouts: [
+      {
+        type: "tip",
+        label: "Multi-Project Support",
+        text: "Founders can create and manage multiple ventures simultaneously. Each project maintains its own isolated spotlight page, pitch reel, feedback inbox, and validation score.",
+      },
+    ],
   },
   {
     num: "05",
-    title: "Adding Startup Information",
-    content:
-      "Input your raw notes, pitch outline, or documents. Neesh uses this information to establish the factual baseline for your public spotlight and chatbot context.",
+    title: "Entering Startup Idea Details",
+    badge: "Venture Parameters",
+    overview:
+      "Define the core parameters of your venture so Neesh AI can calibrate its reality check and format your public presentation.",
+    sectionTitle: "Input Checklist & Strategic Guidelines",
+    items: [
+      {
+        label: "Startup Name",
+        text: "The working brand or product title (e.g., EcoRoute AI).",
+      },
+      {
+        label: "One-Line Hook Slogan",
+        text: "Craft a concise, high-impact one-liner about your startup.",
+      },
+      {
+        label: "Sector / Industry",
+        text: "Vertical classification (SaaS, CleanTech, E-Commerce, FinTech, AI, HealthTech).",
+      },
+      {
+        label: "Venture Stage",
+        text: "Development status (Idea, Prototype, Pre-Revenue, Early Traction).",
+      },
+      {
+        label: "Start Copilot",
+        text: "Click Start Copilot > to enter the AI interactive validation dialogue.",
+      },
+    ],
+    callouts: [
+      {
+        type: "strategy",
+        label: "Critical Positioning Strategy (Hook Slogan)",
+        text: "This one-liner appears directly beside your Elevator Pitch video reel in the community feed! Design your one-liner in a way that hooks audience curiosity immediately—like a captivating slogan that compels anyone discovering your reel to watch your pitch and read your spotlight.",
+      },
+    ],
   },
   {
     num: "06",
-    title: "Creating Your Spotlight",
-    content:
-      "Generate the interactive Spotlight. Review the generated value proposition, audience hooks, and key pillars. Evaluate whether it faithfully represents your vision or hallucinated details.",
+    title: "Copilot Validation Questions",
+    badge: "Neesh AI Navigator",
+    overview:
+      "Neesh AI Navigator runs you through 5 modules of rigorous reality checks to eliminate bias, stress-test defensibility, and calculate value multipliers.",
+    sectionTitle: "The 5 Core Modules",
+    items: [
+      {
+        label: "Module 1 (Problem Reality)",
+        text: "Paint a real-world scenario where someone suffered from this problem and what went wrong.",
+      },
+      {
+        label: "Module 2 (Customer Persona & Budget)",
+        text: "Specific job title, willingness to pay, and cost of their current workaround.",
+      },
+      {
+        label: "Module 3 (Value Multiplier)",
+        text: "Measurable metrics why your approach is 10x better than existing alternatives.",
+      },
+      {
+        label: "Module 4 (Defensibility)",
+        text: "What stops a well-funded competitor from cloning your product overnight?",
+      },
+      {
+        label: "Module 5 (Scale Math)",
+        text: "Realistic transaction volumes, price points, and customer acquisition channels.",
+      },
+    ],
+    callouts: [
+      {
+        type: "tip",
+        label: "Founder Pro-Tip",
+        text: "Use ChatGPT, Claude, or your preferred LLM loaded with your complete startup pitch or business plan to help answer questions and complete all 5 modules with deep, rigorous data.",
+      },
+      {
+        type: "warning",
+        label: "Mandatory Pre-Submission Review",
+        text: "Read and verify every answer once before submitting! Your responses are synthesized into public sections that appear directly on your live Spotlight page for visitors and investors to see.",
+      },
+    ],
   },
   {
     num: "07",
-    title: "Adding Your Elevator Pitch",
-    content:
-      "Link or record an Elevator Pitch video/audio demo. Test whether the preview loads crisply and invites the viewer to interact further with your startup page.",
+    title: "Phase 1 Reality Check & Score",
+    badge: "Diagnostics & Report",
+    overview:
+      "Your answers are synthesized into a holistic market-readiness score with an actionable dimensional diagnostic report.",
+    sectionTitle: "Workspace Hub Features & Report Insights",
+    items: [
+      {
+        label: "Aggregate Score",
+        text: "Market-readiness gauge (e.g. 82% Validation Score) measuring overall venture viability.",
+      },
+      {
+        label: "Key Dimension Gauges",
+        text: "Core Value Proposition, Market Size & Demand, Defensibility, and Go-to-Market Readiness.",
+      },
+      {
+        label: "Sidebar Navigation",
+        text: "Instant access to Spotlight Editor, Elevator Pitch, Audience Inbox, and Audience Insights.",
+      },
+    ],
+    callouts: [
+      {
+        type: "strategy",
+        label: "Action Plan for Idea-Stage Ventures",
+        text: "Based on your answers, you will receive a detailed analytical report. If your venture is at the Idea stage, pay close attention to the Critical Segments! Work on and strengthen any low-scoring dimensions (e.g., customer budget, defensibility, unit economics) before scaling outreach.",
+      },
+    ],
   },
   {
     num: "08",
-    title: "Understanding Your Spotlight",
-    content:
-      "Your Spotlight serves as an interactive public landing page for discovery. Ask yourself: Would I share this URL with prospective investors, early adopters, or co-founders today?",
+    title: "Spotlight Page Editor",
+    badge: "tab=spotlight",
+    overview:
+      "The Spotlight Editor (tab=spotlight) lets you design a high-converting public landing page to capture customer intent and build your waitlist.",
+    sectionTitle: "Customization Controls & Best Practices",
+    items: [
+      {
+        label: "Catchy Hero Cover Image",
+        text: "Create a catchy cover image using ChatGPT / DALL-E based on your startup. Replace the existing default cover image first to make your spotlight visually stand out!",
+      },
+      {
+        label: "Flexible Content Sections",
+        text: "Freely add, edit, or remove content sections based on your preferences.",
+      },
+      {
+        label: "Rich Media (Images & Videos)",
+        text: "Add product screenshots, diagrams, or demo videos to help your audience understand your startup clearly.",
+      },
+      {
+        label: "Feedback Options",
+        text: "Add custom survey questions if you need to gather specific details, requirements, or contact info from prospective users.",
+      },
+      {
+        label: "Interest Tags",
+        text: "Add clear 1-to-2 word requirement tags (e.g., Co-founder, Customers, Investors). Save your tags and save the whole spotlight!",
+      },
+    ],
   },
   {
     num: "09",
-    title: "Using the AI Chatbot",
-    content:
-      "Interact with the embedded chatbot as a visitor. Ask tough questions about your pricing, tech stack, and roadmap. Check if the answers are accurate, fast, and helpful.",
+    title: "Public Spotlight & Live Signals",
+    badge: "/p/:slug",
+    overview:
+      "When visitors open your spotlight link (/p/:slug), they experience your verified value proposition, submit interest, and engage directly.",
+    sectionTitle: "Audience Interaction Points",
+    items: [
+      {
+        label: "Deep-Dive Problem & Solution",
+        text: "Visitors read your verified value proposition, metrics, and roadmap.",
+      },
+      {
+        label: "Glowing Intent Button (\"Neesh It\")",
+        text: "One tap allows visitors to express direct buyer interest and join your early adopter list.",
+      },
+      {
+        label: "Interactive Feedback Form",
+        text: "Prospective customers can submit in-depth ratings, feature requests, and contact details.",
+      },
+    ],
+    callouts: [
+      {
+        type: "warning",
+        label: "Platform Notice on Chatbot",
+        text: "The AI Chatbot is currently undergoing algorithmic retraining and may not work as expected. Founders and visitors should rely on the Glowing Intent Button, the Feedback Survey Form, and direct contact details on the Spotlight page for audience interactions.",
+      },
+    ],
   },
   {
     num: "10",
-    title: "Publishing & Sharing",
-    content:
-      "Grab your public Spotlight link. Try sharing it with a peer or in the Pilot Community Hub below to gather early impressions and validate the link preview.",
+    title: "Elevator Pitch Video & Reels",
+    badge: "Elevator Pitch Tab",
+    overview:
+      "Short-form video reels generate 5x higher engagement. Upload your 30s to 1-minute pitch in the Elevator Pitch tab and broadcast it to the global community.",
+    sectionTitle: "Video Creation & Promotion Steps",
+    items: [
+      {
+        label: "Pitch Creation (30s to 1 min)",
+        text: "Go to the Elevator Pitch tab. Create a punchy 30-second to 1-minute video pitch based on your business, startup, or idea.",
+      },
+      {
+        label: "Upload & Save",
+        text: "Upload your video file (.mp4, .webm, .mov) and click Save Pitch.",
+      },
+      {
+        label: "Push to Cross-Promotional Engine ⚡",
+        text: "Click Push to Engine to publish your pitch to the global discovery space, where everyone can browse your pitch and spotlight just like Instagram Reels or TikTok!",
+      },
+    ],
+    callouts: [
+      {
+        type: "video",
+        label: "Video Creation Pro-Tips",
+        text: "Record a natural founder selfie video pitching the problem and solution directly. Use Google Gemini to generate sharp pitch scripts and storyboards. NotebookLM (Best Suited): Upload your startup notes/deck to Google NotebookLM to generate short-form audio/video discussion summaries—ideal for high-quality, professional pitches!",
+      },
+    ],
   },
   {
     num: "11",
-    title: "Testing Your Startup Workflow",
-    content:
-      "Simulate what a potential user does: read the pitch, ask the AI 2 questions, and express interest. Confirm that interest signals and analytics register properly.",
-  },
-  {
-    num: "12",
-    title: "Understanding Audience Interaction",
-    content:
-      "Check your founder view to see visitor queries, popular questions, and confusion drop-offs. This closes the feedback loop and reveals what your audience actually cares about.",
-  },
-  {
-    num: "13",
-    title: "What You Need to Submit",
-    content:
-      "Submit your Spotlight URL, elevator pitch link, project demo link, and your honest answers in the 'Submit Your Work' section on this page.",
-  },
-  {
-    num: "14",
-    title: "How to Give Feedback",
-    content:
-      "Be brutal and candid! Don't worry about being polite. Tell us what broke, what was slow, what felt unnecessary, and what you would change immediately.",
-  },
-  {
-    num: "15",
-    title: "Common Problems & Troubleshooting",
-    content:
-      "If you experience a session timeout, refresh the page. If the chatbot gives a repetitive answer, re-index your project notes. For urgent blockers, use the direct WhatsApp hotline (+91 9003866111) anytime.",
+    title: "Audience Sprint Tiers (Gold/Silver/Bronze)",
+    badge: "Sprint Milestones",
+    overview:
+      "Share your unique project link across external channels, track incoming leads in real-time, and qualify buyers into Gold, Silver, and Bronze tiers.",
+    sectionTitle: "Viral Multi-Channel Sharing & Inbound Leads",
+    items: [
+      {
+        label: "Share Button on Overview Page",
+        text: "Go to the Overview page and click the Share button to copy your unique project link.",
+      },
+      {
+        label: "Promote Everywhere",
+        text: "Share your link across WhatsApp groups, Instagram bio/stories, Reddit (r/startups), X (Twitter), LinkedIn, and founder communities.",
+      },
+      {
+        label: "Inbound Approaches",
+        text: "Visitors who open the link can view your pitch reel and spotlight. If interested, they will submit interest and approach you directly!",
+      },
+      {
+        label: "Audience Insights Dashboard",
+        text: "Monitor all incoming visitor counts, intent submissions, and feedback responses in real-time on the Audience Insights page.",
+      },
+    ],
+    tiers: [
+      {
+        tier: "🥉 Bronze",
+        name: "Early Adopters",
+        desc: "Visitors who clicked the interest button and signed up.",
+        target: "15 Bronze Target",
+      },
+      {
+        tier: "🥈 Silver",
+        name: "Qualified Feedback",
+        desc: "Visitors who provided detailed answers or survey input.",
+        target: "10 Silver Target",
+      },
+      {
+        tier: "🥇 Gold",
+        name: "High-Intent Buyers",
+        desc: "Prospects confirming pilot budgets, orders, or partner calls.",
+        target: "5 Gold Target",
+      },
+      {
+        tier: "🚀 Auto-Advance",
+        name: "Stage 3 Pilot MVP Status",
+        desc: "Achieve 5 Gold + 10 Silver + 15 Bronze targets to auto-qualify for Stage 3 Pilot MVP status!",
+        target: "5G + 10S + 15B",
+      },
+    ],
   },
 ];
 
@@ -1101,11 +1399,11 @@ function PilotHome() {
         <div className="apple-container-wide">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-gray-200">
             <div>
-              <div className="apple-eyebrow">DOCUMENTATION & ONBOARDING</div>
-              <h2 className="apple-display-lg">Founder Onboarding & Platform Manual</h2>
-              <p className="text-gray-600 max-w-2xl">
-                Comprehensive step-by-step instructions so you can navigate Neesh AI 2.0 without
-                asking personally.
+              <div className="apple-eyebrow">NEESH AI 2.0 · PLATFORM MANUAL</div>
+              <h2 className="apple-display-lg">Founder Onboarding & Step-by-Step Guide</h2>
+              <p className="text-gray-600 max-w-2xl text-base md:text-lg mt-2">
+                Transform raw startup hypotheses into mathematically scored, audience-validated products
+                with AI guidance, interactive spotlight pages, and video pitch reels.
               </p>
             </div>
             <div className="flex gap-3">
@@ -1129,63 +1427,194 @@ function PilotHome() {
             </div>
           </div>
 
-          {/* 3-Step Visual Roadmap */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="p-6 rounded-2xl bg-[#f5f5f7] border border-[#e0e0e0]">
-              <span className="text-xs font-semibold text-[#0066cc]">STEP 1</span>
-              <h3 className="text-lg font-semibold my-1">Upload Raw Idea</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Docs, notes, thoughts. Feed raw inputs directly without manual formatting.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#f5f5f7] border border-[#e0e0e0]">
-              <span className="text-xs font-semibold text-[#0066cc]">STEP 2</span>
-              <h3 className="text-lg font-semibold my-1">Auto-Generate Spotlight</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Instant public validation page with conversational AI trained on your specifics.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#f5f5f7] border border-[#e0e0e0]">
-              <span className="text-xs font-semibold text-[#0066cc]">STEP 3</span>
-              <h3 className="text-lg font-semibold my-1">Detect Gaps & Refine</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Analyze visitor queries, train the chatbot, discover audience doubts, and iterate.
-              </p>
+          {/* Handbook Welcome Callout Banner */}
+          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-white border border-blue-100/90 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-[#0066cc] text-white flex items-center justify-center shrink-0 shadow-md">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#0066cc]">Founder Operational Handbook</span>
+                  <span className="text-xs text-gray-400">•</span>
+                  <span className="text-xs text-gray-500 font-medium">11 Strategic Milestones</span>
+                </div>
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed font-normal">
+                  Welcome to <strong className="font-semibold text-gray-900">Neesh AI 2.0</strong>! This operational handbook walks founders through every milestone of validating a startup. From account initialization and AI Copilot discovery to crafting an irresistible hook slogan, publishing high-converting spotlights, broadcasting elevator pitch reels to the community, and collecting buyer intent.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* SAMPLE ELEVATOR PITCH LIVE SCREEN TAB (Near / Before Section 01: Before You Start) */}
-          <SampleElevatorPitchTab pitchUrl="https://neesh-2-o.vercel.app/p/neesh-ai-2ca678d8-de9c-4116-99ad-b46b3e2a76d6" />
+          {/* Workflow Contents Directory */}
+          <div className="mb-10 p-6 rounded-2xl bg-[#f5f5f7] border border-[#e0e0e0]">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center justify-between">
+              <span>WORKFLOW CONTENTS DIRECTORY</span>
+              <span className="text-gray-400 font-normal">Click any milestone to view instructions</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {guideSections.map((sec, idx) => (
+                <button
+                  key={sec.num}
+                  type="button"
+                  onClick={() => setExpandedGuide(idx)}
+                  className={`text-left p-3 rounded-xl border text-xs transition-all flex items-center justify-between group cursor-pointer ${
+                    expandedGuide === idx
+                      ? "bg-white border-[#0066cc] text-[#0066cc] shadow-sm font-semibold ring-1 ring-[#0066cc]/20"
+                      : "bg-white/90 border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`font-mono font-bold text-[11px] ${expandedGuide === idx ? "text-[#0066cc]" : "text-gray-400"}`}>
+                      {sec.num}.
+                    </span>
+                    <span className="truncate">{sec.title}</span>
+                  </div>
+                  {sec.badge && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-mono shrink-0 ml-1.5 group-hover:bg-blue-50 group-hover:text-[#0066cc]">
+                      {sec.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          {/* 15 Expandable Sections (Section 01 is 'Before You Start') */}
-          <div className="space-y-3">
+          {/* SAMPLE ELEVATOR PITCH LIVE SCREEN TAB (Featured Reel Demo) */}
+          <div className="mb-10">
+            <SampleElevatorPitchTab pitchUrl="https://neesh-2-o.vercel.app/p/neesh-ai-2ca678d8-de9c-4116-99ad-b46b3e2a76d6" />
+          </div>
+
+          {/* 11 Expandable Detailed Steps */}
+          <div className="space-y-4">
             {guideSections.map((sec, idx) => (
               <div
                 key={sec.num}
-                className="border border-[#e0e0e0] rounded-2xl overflow-hidden bg-white"
+                className={`border rounded-2xl overflow-hidden transition-all duration-200 ${
+                  expandedGuide === idx
+                    ? "border-[#0066cc] bg-white shadow-md ring-1 ring-[#0066cc]/10"
+                    : "border-[#e0e0e0] bg-white hover:border-gray-300 shadow-sm"
+                }`}
               >
                 <button
                   type="button"
                   onClick={() => setExpandedGuide(expandedGuide === idx ? null : idx)}
-                  className="w-full text-left p-5 flex justify-between items-center bg-white hover:bg-gray-50 border-none cursor-pointer"
+                  className="w-full text-left p-5 md:p-6 flex justify-between items-center bg-white hover:bg-gray-50/70 border-none cursor-pointer transition-colors"
                 >
-                  <span className="flex items-center gap-4">
-                    <span className="text-xs font-mono font-semibold text-[#0066cc] w-6">
-                      {sec.num}
+                  <div className="flex items-center gap-3 md:gap-4 flex-wrap sm:flex-nowrap">
+                    <span
+                      className={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${
+                        expandedGuide === idx
+                          ? "bg-[#0066cc] text-white"
+                          : "bg-blue-50 text-[#0066cc]"
+                      }`}
+                    >
+                      STEP {sec.num}
                     </span>
-                    <span className="font-semibold text-base text-[#1d1d1f]">{sec.title}</span>
-                  </span>
+                    <span className="font-semibold text-base md:text-lg text-[#1d1d1f]">
+                      {sec.title}
+                    </span>
+                    {sec.badge && (
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                        {sec.badge}
+                      </span>
+                    )}
+                  </div>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-400 transition-transform ${
+                    className={`w-5 h-5 text-gray-400 transition-transform shrink-0 ${
                       expandedGuide === idx ? "rotate-180 text-[#0066cc]" : ""
                     }`}
                   />
                 </button>
                 {expandedGuide === idx && (
-                  <div className="px-5 pb-5 pt-2 text-sm text-gray-600 border-t border-gray-100 bg-gray-50/50 leading-relaxed">
-                    {sec.content}
+                  <div className="px-5 pb-6 md:px-6 pt-3 text-sm text-gray-600 border-t border-gray-100 bg-gray-50/30 space-y-5">
+                    {/* Overview */}
+                    <p className="text-gray-700 leading-relaxed font-normal text-sm md:text-base">
+                      {sec.overview}
+                    </p>
+
+                    {/* Section items */}
+                    {sec.items && sec.items.length > 0 && (
+                      <div className="bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs space-y-3">
+                        {sec.sectionTitle && (
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                            {sec.sectionTitle}
+                          </h4>
+                        )}
+                        <ul className="space-y-2.5 text-sm text-gray-600">
+                          {sec.items.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2.5 leading-relaxed">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#0066cc] mt-2 shrink-0" />
+                              <div>
+                                <strong className="font-semibold text-gray-900">{item.label}: </strong>
+                                <span>{item.text}</span>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Callouts */}
+                    {sec.callouts &&
+                      sec.callouts.map((callout, cIdx) => (
+                        <div
+                          key={cIdx}
+                          className={`p-4 rounded-xl border flex items-start gap-3 ${
+                            callout.type === "tip"
+                              ? "bg-amber-50/70 border-amber-200 text-amber-950"
+                              : callout.type === "info"
+                              ? "bg-sky-50/70 border-sky-200 text-sky-950"
+                              : callout.type === "warning"
+                              ? "bg-rose-50/70 border-rose-200 text-rose-950"
+                              : callout.type === "video"
+                              ? "bg-purple-50/70 border-purple-200 text-purple-950"
+                              : "bg-indigo-50/70 border-indigo-200 text-indigo-950"
+                          }`}
+                        >
+                          <span className="text-lg shrink-0 mt-0.5">
+                            {callout.type === "tip" && "💡"}
+                            {callout.type === "info" && "ℹ️"}
+                            {callout.type === "warning" && "⚠️"}
+                            {callout.type === "video" && "🎬"}
+                            {callout.type === "strategy" && "⭐"}
+                          </span>
+                          <div className="text-xs md:text-sm leading-relaxed">
+                            <strong className="font-semibold block mb-0.5">{callout.label}:</strong>
+                            <span className="opacity-95">{callout.text}</span>
+                          </div>
+                        </div>
+                      ))}
+
+                    {/* Step 11 Tiers */}
+                    {sec.tiers && sec.tiers.length > 0 && (
+                      <div className="pt-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+                          VALIDATION SPRINT TIERS & TARGETS
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                          {sec.tiers.map((tier, tIdx) => (
+                            <div
+                              key={tIdx}
+                              className="p-4 rounded-xl bg-white border border-gray-200/90 shadow-xs flex flex-col justify-between"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="font-bold text-sm text-gray-900">{tier.tier}</span>
+                                  {tier.target && (
+                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 text-[#0066cc] font-semibold border border-blue-100">
+                                      {tier.target}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-xs font-semibold text-gray-700 mb-1">{tier.name}</div>
+                                <p className="text-xs text-gray-500 leading-normal">{tier.desc}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
