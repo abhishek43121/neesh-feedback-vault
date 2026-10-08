@@ -14,6 +14,7 @@ import {
   Heart,
   LockKeyhole,
   Mail,
+  Menu,
   MessageCircle,
   MessageSquare,
   Phone,
@@ -266,6 +267,9 @@ function PilotHome() {
   const [bugContact, setBugContact] = useState("");
   const [bugBusy, setBugBusy] = useState(false);
   const [bugSent, setBugSent] = useState(false);
+
+  // Mobile nav state
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Hotline quick message
   const [hotlineName, setHotlineName] = useState("");
@@ -593,14 +597,19 @@ function PilotHome() {
 
   return (
     <div className="min-h-screen bg-white text-[#1d1d1f]">
-      {/* 1. APPLE GLOBAL NAV (44px pure black) */}
-      <nav className="apple-global-nav" aria-label="Global">
-        <div className="apple-global-nav-inner">
-          <a href="#top" className="apple-global-brand">
-            <img src="/neesh-logo.png" alt="Neesh AI" className="h-6 w-auto object-contain brightness-0 invert" />
-          </a>
+      {/* UNIFIED WHITE APPLE HEADER */}
+      <nav className="apple-sub-nav" aria-label="Main navigation">
+        <div className="apple-sub-nav-inner">
+          {/* Brand & Badge */}
+          <div className="apple-sub-nav-title flex items-center gap-3">
+            <a href="#top" className="flex items-center gap-2.5 no-underline">
+              <img src="/neesh-logo.png" alt="Neesh AI" className="h-7 sm:h-8 w-auto object-contain" />
+            </a>
+            <span className="apple-sub-nav-badge">Founding Pilot 2.0</span>
+          </div>
 
-          <div className="apple-global-nav-links">
+          {/* Navigation Links (Moved from black header) */}
+          <div className="hidden xl:flex items-center gap-6 apple-sub-nav-links">
             <a href="#about">About Neesh</a>
             <a href="#guide">Platform Guide</a>
             <a href="#checklist">Testing Mission</a>
@@ -609,26 +618,8 @@ function PilotHome() {
             <a href="#feedback">Your Feedback</a>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPasswordModalOpen(true)}
-            className="apple-btn text-white text-xs opacity-80 hover:opacity-100 flex items-center gap-1.5 bg-transparent border-none cursor-pointer"
-          >
-            <LockKeyhole className="w-3.5 h-3.5 text-[#2997ff]" />
-            <span>2.0</span>
-          </button>
-        </div>
-      </nav>
-
-      {/* 2. SUB-NAV FROSTED (52px, frosted-glass) */}
-      <nav className="apple-sub-nav" aria-label="Sub navigation">
-        <div className="apple-sub-nav-inner">
-          <div className="apple-sub-nav-title flex items-center gap-3">
-            <img src="/neesh-logo.png" alt="Neesh AI" className="h-7 sm:h-8 w-auto object-contain" />
-            <span className="apple-sub-nav-badge">Founding Pilot 2.0</span>
-          </div>
-
-          <div className="flex items-center gap-3">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 sm:gap-3">
             {registeredPilot ? (
               <button
                 type="button"
@@ -661,9 +652,9 @@ function PilotHome() {
             <button
               type="button"
               onClick={() => setIsPasswordModalOpen(true)}
-              className="apple-pill-secondary apple-pill-sm"
+              className="apple-pill-secondary apple-pill-sm flex items-center gap-1.5"
             >
-              <LockKeyhole className="w-3 h-3" />
+              <LockKeyhole className="w-3 h-3 text-[#0066cc]" />
               <span>2.0 Access</span>
             </button>
 
@@ -671,13 +662,71 @@ function PilotHome() {
               href={NEESH_AI_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="apple-pill-primary apple-pill-sm"
+              className="apple-pill-primary apple-pill-sm flex items-center gap-1.5"
             >
               <span>Launch Platform</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
+
+            {/* Mobile Nav Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+              className="xl:hidden p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors bg-transparent border-none cursor-pointer"
+              aria-label="Toggle Navigation"
+            >
+              {isMobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {isMobileNavOpen && (
+          <div className="xl:hidden border-b border-black/5 bg-white/95 backdrop-blur-xl px-6 py-4 shadow-lg space-y-3">
+            <a
+              href="#about"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              About Neesh
+            </a>
+            <a
+              href="#guide"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              Platform Guide
+            </a>
+            <a
+              href="#checklist"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              Testing Mission
+            </a>
+            <a
+              href="#hotline"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              Founder Hotline
+            </a>
+            <a
+              href="#community"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              Community
+            </a>
+            <a
+              href="#feedback"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block text-sm font-medium text-[#1d1d1f] hover:text-[#0066cc] py-1"
+            >
+              Your Feedback
+            </a>
+          </div>
+        )}
       </nav>
 
       {/* 3. HERO TILE (Elevated Glass & Ambient Glow Canvas) */}

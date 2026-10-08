@@ -102,73 +102,13 @@ html {
   transform: scale(0.95) !important;
 }
 
-/* Global Nav (44px, pure black) */
-.apple-global-nav {
-  height: 44px;
-  background-color: #000000;
-  color: #ffffff;
+/* Unified Apple Header (Frosted Glass Header) */
+.apple-sub-nav {
+  height: 60px;
   position: sticky;
   top: 0;
-  z-index: 50;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.apple-global-nav-inner {
-  max-width: 1400px;
-  width: 100%;
-  height: 100%;
-  margin-inline: auto;
-  padding-inline: clamp(16px, 3.5vw, 36px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.apple-global-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.15px;
-}
-.apple-global-brand-logo {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  background: #ffffff;
-  color: #000000;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  font-size: 11px;
-}
-.apple-global-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-}
-.apple-global-nav-links a {
-  color: #d2d2d7;
-  font-size: 12px;
-  font-weight: 400;
-  text-decoration: none;
-  letter-spacing: -0.12px;
-  opacity: 0.8;
-  transition: opacity 0.15s ease;
-}
-.apple-global-nav-links a:hover {
-  opacity: 1;
-  color: #ffffff;
-}
-
-/* Sub-Nav Frosted (52px, frosted-glass) */
-.apple-sub-nav {
-  height: 52px;
-  position: sticky;
-  top: 44px;
   z-index: 40;
-  background-color: rgba(245, 245, 247, 0.82);
+  background-color: rgba(255, 255, 255, 0.88);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -182,11 +122,40 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 .apple-sub-nav-title {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
+}
+.apple-sub-nav-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0066cc;
+  background: rgba(0, 102, 204, 0.08);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.apple-sub-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.apple-sub-nav-links a {
+  color: #515154;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+.apple-sub-nav-links a:hover {
+  color: #0066cc;
 }
 .apple-sub-nav-title h1 {
   font-size: 21px;
@@ -559,8 +528,8 @@ html {
   text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-  .apple-global-nav-links {
+@media (max-width: 1024px) {
+  .apple-sub-nav-links {
     display: none;
   }
   .apple-tile-light, .apple-tile-parchment, .apple-tile-dark, .apple-tile-dark-2 {
