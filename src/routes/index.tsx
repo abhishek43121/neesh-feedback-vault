@@ -1741,15 +1741,28 @@ function PilotHome() {
         </div>
       </section>
 
-      {/* 9. FLOATING BUG WIDGET */}
+      {/* 9. FLOATING BUG & FEEDBACK WIDGET */}
       <div className="apple-floating-widget">
         <button
           type="button"
           onClick={() => setIsBugModalOpen(true)}
-          className="apple-floating-btn"
+          className="apple-floating-btn group"
+          aria-label="Report Bug or Feedback"
         >
-          <Bug className="w-4 h-4 text-[#2997ff]" />
-          <span>Report Bug / Feedback</span>
+          <div className="apple-floating-icon-badge">
+            <MessageSquare className="w-4 h-4 text-white" />
+            <span className="apple-floating-subbadge">
+              <Bug className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+            </span>
+            <span className="apple-floating-ping-dot">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34c759] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34c759] ring-1 ring-[#1d1d1f]" />
+            </span>
+          </div>
+          <div className="apple-floating-text-group">
+            <span className="apple-floating-title">Bug & Feedback</span>
+            <span className="apple-floating-subtitle">Pilot Hotline</span>
+          </div>
         </button>
       </div>
 
@@ -1764,13 +1777,18 @@ function PilotHome() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 mb-2">
-              <Bug className="w-5 h-5 text-[#0066cc]" />
-              <h3 className="text-lg font-semibold text-[#1d1d1f]">Quick Bug & Feedback Drawer</h3>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="apple-floating-icon-badge !w-9 !h-9 shadow-sm">
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span className="apple-floating-subbadge !w-4 !h-4">
+                  <Bug className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[#1d1d1f] leading-tight">Quick Bug & Feedback Drawer</h3>
+                <p className="text-xs text-[#86868b]">Direct channel to Neesh AI engineering</p>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mb-4">
-              Encountered a problem or have an immediate suggestion while testing?
-            </p>
 
             {bugSent ? (
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs text-center font-medium">
