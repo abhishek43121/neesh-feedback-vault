@@ -31,6 +31,22 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
   };
 }
 
+// Polyfill global WebSocket for server runtimes (Node < 22 / Netlify Functions)
+if (typeof globalThis !== 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class DummyWebSocket {
+    static readonly CONNECTING = 0;
+    static readonly OPEN = 1;
+    static readonly CLOSING = 2;
+    static readonly CLOSED = 3;
+    readonly readyState = 3;
+    constructor() {}
+    close() {}
+    send() {}
+    addEventListener() {}
+    removeEventListener() {}
+  };
+}
+
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
     
@@ -73,6 +89,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: Invalid token');
     }
 
+    const DummyWs = (globalThis as any)?.WebSocket;
     const supabase = createClient<Database>(
       SUPABASE_URL!,
       SUPABASE_PUBLISHABLE_KEY!,
@@ -87,6 +104,9 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
           storage: undefined,
           persistSession: false,
           autoRefreshToken: false,
+        },
+        realtime: {
+          transport: DummyWs,
         },
       }
     );

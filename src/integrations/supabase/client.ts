@@ -71,6 +71,9 @@ function createSupabaseClient() {
       persistSession: true,
       autoRefreshToken: true,
     },
+    realtime: {
+      transport: typeof WebSocket !== 'undefined' ? WebSocket : (globalThis as any).WebSocket,
+    },
   });
 }
 
