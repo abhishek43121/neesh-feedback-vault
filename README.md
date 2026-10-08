@@ -1,6 +1,6 @@
 # Feedback Vault
 
-I want a place where i can see all the feedbacks and details of the users there - where every details and feedbacks to be visible there and there should be a but button called 2.0 - when user clicks on that button - it should ask for password - 21062001 is the password - only when this password is given - that page should open
+I want a place where i can see all the feedbacks and details of the users there - where every details and feedbacks to be visible there and there should be a button called 2.0 - when user clicks on that button - it should ask for the founder access password - only when verified - that page should open
 
 The overview wordings - use this wordings FOUNDING PILOT • EARLY ACCESS • PRIVATE BETA
 You are getting access
