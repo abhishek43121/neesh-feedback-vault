@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useSession } from "@tanstack/react-start/server";
+import { getRequestHeader, getRequestIP, useSession } from "@tanstack/react-start/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
@@ -245,17 +245,60 @@ export const lockFounderDashboard = createServerFn({ method: "POST" }).handler(a
   return { ok: true as const };
 });
 
+function parseUserAgent(ua: string): string {
+  if (!ua) return "Unknown Device";
+  let os = "Desktop";
+  if (/android/i.test(ua)) os = "Android";
+  else if (/iphone/i.test(ua)) os = "iPhone";
+  else if (/ipad/i.test(ua)) os = "iPad";
+  else if (/macintosh|mac os x/i.test(ua)) os = "macOS";
+  else if (/windows/i.test(ua)) os = "Windows";
+  else if (/linux/i.test(ua)) os = "Linux";
+
+  let browser = "Browser";
+  if (/edg/i.test(ua)) browser = "Edge";
+  else if (/chrome/i.test(ua) && !/edg/i.test(ua)) browser = "Chrome";
+  else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = "Safari";
+  else if (/firefox/i.test(ua)) browser = "Firefox";
+
+  return `${browser} on ${os}`;
+}
+
 export const getFounderDashboard = createServerFn({ method: "GET" }).handler(async () => {
-  if (!(await isFounderUnlocked())) return { authorized: false as const, profiles: [] };
+  if (!(await isFounderUnlocked())) {
+    return { authorized: false as const, profiles: [], registeredMembers: [] };
+  }
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
+
+  // 1. Fetch all feedback, bugs, and visitor logs
+  const { data: feedbackData, error: feedbackError } = await supabaseAdmin
     .from("pilot_feedback")
     .select("*, pilot_profiles(*)")
     .order("submitted_at", { ascending: false })
+    .limit(2000);
+
+  if (feedbackError) {
+    console.error("[getFounderDashboard feedbackError]", feedbackError);
+    throw new Error("We couldn't load pilot feedback right now.");
+  }
+
+  // 2. Fetch full registered pilot founders roster
+  const { data: memberProfiles, error: memberError } = await supabaseAdmin
+    .from("pilot_profiles")
+    .select("*")
+    .order("created_at", { ascending: false })
     .limit(1000);
-  if (error) throw new Error("We couldn't load pilot feedback right now.");
-  return { authorized: true as const, profiles: data ?? [] };
+
+  if (memberError) {
+    console.error("[getFounderDashboard memberProfiles error]", memberError);
+  }
+
+  return {
+    authorized: true as const,
+    profiles: feedbackData ?? [],
+    registeredMembers: memberProfiles ?? [],
+  };
 });
 
 const pilotRegistrationSchema = z.object({
@@ -303,4 +346,142 @@ export const registerPilotMember = createServerFn({ method: "POST" })
         startup_name: profile.startup_name,
       },
     };
+  });
+
+const pageViewSchema = z.object({
+  visitor_id: z.string().trim().max(100),
+  path: z.string().trim().max(300).default("/"),
+  referrer: z.string().trim().max(500).nullish(),
+  member_email: z.string().trim().email().nullish(),
+  member_name: z.string().trim().max(120).nullish(),
+  member_startup: z.string().trim().max(160).nullish(),
+  member_phone: z.string().trim().max(40).nullish(),
+  screen_width: z.number().nullish(),
+  screen_height: z.number().nullish(),
+  timezone: z.string().trim().max(80).nullish(),
+});
+
+export const trackPageView = createServerFn({ method: "POST" })
+  .validator((input: unknown) => pageViewSchema.parse(input))
+  .handler(async ({ data }) => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+      let ip = "";
+      let country = "";
+      let city = "";
+      let userAgent = "";
+      try {
+        ip =
+          getRequestIP() ||
+          getRequestHeader("x-nf-client-connection-ip") ||
+          getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim() ||
+          "";
+        country =
+          getRequestHeader("x-country") ||
+          getRequestHeader("cf-ipcountry") ||
+          getRequestHeader("x-nf-country") ||
+          "";
+        city = getRequestHeader("x-city") || getRequestHeader("x-nf-subdivision") || "";
+        userAgent = getRequestHeader("user-agent") || "";
+      } catch {
+        // ignore header retrieval errors
+      }
+
+      const deviceInfo = parseUserAgent(userAgent);
+      const isRegistered = Boolean(data.member_email);
+
+      let profileId: string | null = null;
+      const memberName = data.member_name || "";
+      const memberEmail = data.member_email || "";
+      const memberStartup = data.member_startup || "";
+
+      if (isRegistered && memberEmail) {
+        const { data: existing } = await supabaseAdmin
+          .from("pilot_profiles")
+          .select("id, full_name, email, startup_name, whatsapp")
+          .eq("email", memberEmail.toLowerCase())
+          .maybeSingle();
+
+        if (existing) {
+          profileId = existing.id;
+          await supabaseAdmin
+            .from("pilot_profiles")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("id", existing.id);
+        } else {
+          const { data: created } = await supabaseAdmin
+            .from("pilot_profiles")
+            .upsert(
+              {
+                full_name: memberName || "Founding Member",
+                email: memberEmail.toLowerCase(),
+                whatsapp: data.member_phone || "",
+                startup_name: memberStartup || "Neesh Pilot",
+                company: memberStartup || "Neesh Pilot",
+                pilot_role: "Founding Pilot Member",
+                profession: "Founder",
+                location: [city, country].filter(Boolean).join(", "),
+              },
+              { onConflict: "email" },
+            )
+            .select("id")
+            .maybeSingle();
+          profileId = created?.id || null;
+        }
+      } else {
+        const anonEmail = `visitor-${data.visitor_id.slice(0, 16).toLowerCase()}@pilot.neesh.ai`;
+        const anonName = `Visitor (${country || "Web"} · ${deviceInfo})`;
+
+        const { data: anonProfile } = await supabaseAdmin
+          .from("pilot_profiles")
+          .upsert(
+            {
+              email: anonEmail,
+              full_name: anonName,
+              startup_name: deviceInfo,
+              company: country || "Online",
+              pilot_role: "Website Visitor",
+              profession: "Visitor",
+              location: [city, country].filter(Boolean).join(", "),
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "email" },
+          )
+          .select("id")
+          .maybeSingle();
+
+        profileId = anonProfile?.id || null;
+      }
+
+      if (profileId) {
+        await supabaseAdmin.from("pilot_feedback").insert({
+          profile_id: profileId,
+          overall_score: 5,
+          clarity_score: 5,
+          usability_score: 5,
+          onboarding_score: 5,
+          spotlight_score: 5,
+          pitch_score: 5,
+          ai_score: 5,
+          valuable_part: `[PAGE_VIEW] ${data.path}`,
+          frustrating_part: `IP: ${ip || "—"} | Location: ${[city, country].filter(Boolean).join(", ") || "Unknown"} | TZ: ${data.timezone || "—"} | Screen: ${data.screen_width || "—"}x${data.screen_height || "—"}`,
+          confusing_part: userAgent,
+          missing_feature: data.visitor_id,
+          improvement: deviceInfo,
+          discovery_answer: "Yes",
+          recommendation: "Definitely",
+          reuse_intent: "Yes",
+          website_url: data.referrer || "Direct",
+          what_tested: ["PageView", data.path],
+          project_stage: isRegistered ? "Member Visit" : "Visitor Activity",
+          submitted_at: new Date().toISOString(),
+        });
+      }
+
+      return { ok: true as const };
+    } catch (err) {
+      console.error("[trackPageView error]", err);
+      return { ok: false as const };
+    }
   });

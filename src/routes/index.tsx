@@ -33,6 +33,7 @@ import {
   registerPilotMember,
   submitPilotFeedback,
   submitQuickReport,
+  trackPageView,
   unlockFounderDashboard,
 } from "@/lib/pilot.functions";
 import { AboutNeeshSection } from "@/components/AboutNeeshSection";
@@ -481,6 +482,7 @@ function PilotHome() {
   const submitFeedback = useServerFn(submitPilotFeedback);
   const submitQuick = useServerFn(submitQuickReport);
   const unlockFounder = useServerFn(unlockFounderDashboard);
+  const trackView = useServerFn(trackPageView);
 
   // States
   const [busy, setBusy] = useState(false);
@@ -635,6 +637,69 @@ function PilotHome() {
     }
   }, []);
 
+  // Real-time visitor activity & page view tracking
+  useEffect(() => {
+    let visitorId = "";
+    try {
+      visitorId = localStorage.getItem("neesh_visitor_id") || "";
+      if (!visitorId) {
+        visitorId =
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `vis-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        localStorage.setItem("neesh_visitor_id", visitorId);
+      }
+    } catch {
+      visitorId = `vis-${Date.now()}`;
+    }
+
+    const currentPath = (window.location.pathname || "/") + (window.location.hash || "");
+    const sessionKey = `tracked_visit_${currentPath}`;
+
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, "1");
+      void trackView({
+        data: {
+          visitor_id: visitorId,
+          path: currentPath,
+          referrer: document.referrer || "",
+          member_email: registeredPilot?.email,
+          member_name: registeredPilot?.full_name,
+          member_startup: registeredPilot?.startup_name,
+          member_phone: registeredPilot?.phone,
+          screen_width: window.innerWidth,
+          screen_height: window.innerHeight,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      }).catch(() => {});
+    }
+
+    const onHashChange = () => {
+      const newPath = (window.location.pathname || "/") + (window.location.hash || "");
+      const hashKey = `tracked_visit_${newPath}`;
+      if (!sessionStorage.getItem(hashKey)) {
+        sessionStorage.setItem(hashKey, "1");
+        void trackView({
+          data: {
+            visitor_id: visitorId,
+            path: newPath,
+            referrer: document.referrer || "",
+            member_email: registeredPilot?.email,
+            member_name: registeredPilot?.full_name,
+            member_startup: registeredPilot?.startup_name,
+            member_phone: registeredPilot?.phone,
+            screen_width: window.innerWidth,
+            screen_height: window.innerHeight,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        }).catch(() => {});
+      }
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [registeredPilot]);
+
   async function handleRegisterSubmit(e: FormEvent) {
     e.preventDefault();
     setRegisterBusy(true);
@@ -666,6 +731,22 @@ function PilotHome() {
       setHotlineName(member.full_name);
       setHotlineContact(member.phone || member.email);
       setBugContact(member.email || member.phone);
+
+      // Attribute active session visit to newly authenticated member
+      void trackView({
+        data: {
+          visitor_id: localStorage.getItem("neesh_visitor_id") || `vis-${Date.now()}`,
+          path: window.location.pathname + window.location.hash,
+          referrer: "Pilot Member Registration",
+          member_email: member.email,
+          member_name: member.full_name,
+          member_startup: member.startup_name,
+          member_phone: member.phone,
+          screen_width: window.innerWidth,
+          screen_height: window.innerHeight,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      }).catch(() => {});
 
       setRegisterSuccessMsg("Welcome to Neesh AI! Your pilot profile is authenticated.");
       setTimeout(() => {
